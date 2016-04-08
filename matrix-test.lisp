@@ -6,22 +6,27 @@
        :collect num)))
 
 (defun get-num-out (str)
-  (do* ((pos (position #\  str) (position #\  (subseq str (1+ pos))))
-        (strr (subseq str 0 pos) (subseq str (1+ poss) (+ 1 poss pos)))
-        (num (parse-string-to-float strr) (append num (parse-string-to-float strr)))
-        (len (1+ pos) (+ pos len))
-        (poss pos (+ poss pos)))
-       ((eql (length num) 7) (print num) (print len) (print (length str)))))
+  (do* ((pos (position #\  str) (position #\  (subseq str (+ 1 poss))))
+        (strr (subseq str 0 pos) (subseq str (1+ poss) (if (eql pos nil) nil (+ 1 poss pos))))
+        (num (car (parse-string-to-float strr)) (car (parse-string-to-float strr)))
+        (nums (list num) (append nums (list num)))
+        (poss pos (if (eql pos nil) nil (+ 1 poss pos))))
+       ((eql pos nil)
+        nums)))
+
+(defun *list-to-array (ll)
+  (let* ((len (length ll))
+         (ar (make-array len :initial-contents ll)))
+    ar))
 
 (defun readData ()
   (with-open-file (f #P"./testData.txt"
                      :direction :input)
     (do* ((l (read-line f) (read-line f nil 'eof))
-
-          (tt (print l) (print l)))
-
-        
-        ((eql l 'eof) "okok"))))
+          (x (get-num-out l) (if (eql l 'eof) '(0) (get-num-out l)))
+          (ar (*list-to-array x) (*list-to-array x))
+          (tt (print (type-of x)) (print x)))
+        ((eql l 'eof) "Finsh read data"))))
 
 (defun computeCost (X y theta)
   "X is sample, and is a array. y is result."
