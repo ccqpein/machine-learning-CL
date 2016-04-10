@@ -6,6 +6,7 @@
        :collect num)))
 
 (defun get-num-out (str)
+  (declare (inline parse-string-to-float))
   (do* ((pos (position #\  str) (position #\  (subseq str (+ 1 poss))))
         (strr (subseq str 0 pos) (subseq str (1+ poss) (if (eql pos nil) nil (+ 1 poss pos))))
         (num (car (parse-string-to-float strr)) (car (parse-string-to-float strr)))
@@ -22,21 +23,29 @@
 (defun readData ()
   (with-open-file (f #P"./testData.txt"
                      :direction :input)
+    (declare (inline *list-to-array))
     (do* ((l (read-line f) (read-line f nil 'eof))
           (x (get-num-out l) (if (eql l 'eof) '(0) (get-num-out l)))
           (ar (*list-to-array x) (*list-to-array x))
-          (tt (print (type-of x)) (print x)))
+          (pp (print ar) (print ar)))
         ((eql l 'eof) "Finsh read data"))))
 
-(defun computeCost (X y theta)
+(defun computeCost (X theta y)
   "X is sample, and is a array. y is result."
   (let ((temp)
-        (result))
+        (result)
+        (len-sample (length x)))
+    (declare (special temp))
     (setf temp 
           (loop for i-x across X
              for i-theta across theta sum
                (* i-x i-theta)))
-    (setf result (* (- temp y) (- temp y)))
+    (setf result (/ (* (- temp y) (- temp y))
+                    (* 2d0 len-sample)))
     result))
-
-
+#|
+(defun partial-derivative (x func &rest other)
+  "to calculate the partial-derivative. x and is array."
+  (let* ((len-array (length x))
+         (PD-array (make-array len-array :element-type 'double-float))
+  |#     
