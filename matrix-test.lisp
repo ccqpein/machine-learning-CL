@@ -43,9 +43,14 @@
     (setf result (/ (* (- temp y) (- temp y))
                     (* 2d0 len-sample)))
     result))
-#|
-(defun partial-derivative (x func &rest other)
+
+(defun partial-derivative (func x &optional (d (expt 2 -100)) &rest other)
   "to calculate the partial-derivative. x and is array."
   (let* ((len-array (length x))
-         (PD-array (make-array len-array :element-type 'double-float))
-  |#     
+;         (temp-array (make-array len-array :element-type 'double-float))
+         (temp-y)
+         (result))
+    (setf temp-y (funcall func x other)) ;need more
+    (loop for i from 1 to len-array do
+         (setf (elt x i) (+ (elt x i) d)))
+    (setf result (- (funcall func x) temp-y))))
