@@ -44,13 +44,32 @@
                     (* 2d0 len-sample)))
     result))
 
-(defun partial-derivative (func x &optional (d (expt 2 -100)) &rest other)
-  "to calculate the partial-derivative. x and is array."
-  (let* ((len-array (length x))
-;         (temp-array (make-array len-array :element-type 'double-float))
-         (temp-y)
-         (result))
-    (setf temp-y (funcall func x other)) ;need more
-    (loop for i from 1 to len-array do
-         (setf (elt x i) (+ (elt x i) d)))
-    (setf result (- (funcall func x) temp-y))))
+(defun partial-derivative (argspoint func args &optional (d (expt 2 -100)))
+  "to calculate the partial-derivative. argspoint is which args need to caculate partial derivative."
+  (let ((tempargs (nth argspoint args)))
+    (cond ((typep tempargs 'array)
+           (let* ((len-array (length tempargs))
+                  (newArg1 (loop for i from 0 to (1- len-array) collect
+                                (+ (elt tempargs i) d)))
+                  (newArg2 (loop for i from 0 to (1- len-array) collect
+                                (- (elt tempargs i) d)))
+                  (e (print newArg1))
+                  (ee (print newArg2))
+                  (result))
+             (setf result 
+                   (/ (- (apply func (setf (nth argspoint args) newArg1))
+                         (apply func (setf (nth argspoint args) newArg2)))
+                      (* 2 d)))
+             (return-from partial-derivative result)))
+          ((typep tempargs 'integer)
+           (let* ((copyArgs (copy-list args))
+                  (newArg1 (progn (setf (nth argspoint args) (+ d tempargs))
+                                  args))
+                  (newArg2 (progn (setf (nth argspoint copyArgs) (- tempargs d))
+                                  copyArgs))
+                  (result))
+             (setf result
+                   (/ (- (apply func newArg1)
+                         (apply func newArg2))
+                      (* 2 d)))
+           (return-from partial-derivative result))))))
