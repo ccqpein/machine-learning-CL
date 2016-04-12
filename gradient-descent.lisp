@@ -48,17 +48,20 @@
   "to calculate the partial-derivative. argspoint is which args need to caculate partial derivative."
   (let ((tempargs (nth argspoint args)))
     (cond ((typep tempargs 'array)
-           (let* ((len-array (length tempargs))
-                  (newArg1 (loop for i from 0 to (1- len-array) collect
-                                (+ (elt tempargs i) d)))
-                  (newArg2 (loop for i from 0 to (1- len-array) collect
-                                (- (elt tempargs i) d)))
-                  (e (print newArg1))
-                  (ee (print newArg2))
+           (let* ((copyArgs (copy-list args))
+                  (len-array (length tempargs))
+                  (temp1 (*list-to-array
+                            (loop for i from 0 to (1- len-array) collect
+                                                                 (+ (elt tempargs i) d))))
+                  (temp2 (*list-to-array
+                            (loop for i from 0 to (1- len-array) collect
+                                                                 (- (elt tempargs i) d))))
+                  (newArg1 (progn (setf (nth argspoint copyArgs) temp1) copyArgs))
+                  (newArg2 (progn (setf (nth argspoint args) temp2) args))
                   (result))
              (setf result 
-                   (/ (- (apply func (setf (nth argspoint args) newArg1))
-                         (apply func (setf (nth argspoint args) newArg2)))
+                   (/ (- (apply func newArg1)
+                         (apply func newArg2))
                       (* 2 d)))
              (return-from partial-derivative result)))
           ((typep tempargs 'integer)
