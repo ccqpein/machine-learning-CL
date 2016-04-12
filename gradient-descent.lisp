@@ -47,6 +47,7 @@
 (defun partial-derivative (argspoint func args &optional (d (expt 2 -100)))
   "to calculate the partial-derivative. argspoint is which args need to caculate partial derivative."
   (let ((tempargs (nth argspoint args)))
+    (declare (inline *list-to-array))
     (cond ((typep tempargs 'array)
            (let* ((copyArgs (copy-list args))
                   (len-array (length tempargs))
@@ -59,6 +60,7 @@
                   (newArg1 (progn (setf (nth argspoint copyArgs) temp1) copyArgs))
                   (newArg2 (progn (setf (nth argspoint args) temp2) args))
                   (result))
+             (declare (special result))
              (setf result 
                    (/ (- (apply func newArg1)
                          (apply func newArg2))
@@ -71,6 +73,7 @@
                   (newArg2 (progn (setf (nth argspoint copyArgs) (- tempargs d))
                                   copyArgs))
                   (result))
+             (declare (special result))
              (setf result
                    (/ (- (apply func newArg1)
                          (apply func newArg2))
