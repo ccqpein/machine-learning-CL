@@ -44,38 +44,34 @@
                     (* 2d0 len-sample)))
     result))
 
-(defun partial-derivative (argspoint func args &optional (d (expt 2 -100)))
+(defmacro partial-derivative (argspoint func args &optional (d (expt 2 -100)))
   "to calculate the partial-derivative. argspoint is which args need to caculate partial derivative."
-  (let ((tempargs (nth argspoint args)))
+  (let ((realArgs (cadr args))
+        (tempargs (nth argspoint (cadr args))))
     (declare (inline *list-to-array))
-    (cond ((typep tempargs 'array)
-           (let* ((copyArgs (copy-list args))
-                  (len-array (length tempargs))
-                  (temp1 (*list-to-array
-                            (loop for i from 0 to (1- len-array) collect
-                                                                 (+ (elt tempargs i) d))))
-                  (temp2 (*list-to-array
-                            (loop for i from 0 to (1- len-array) collect
-                                                                 (- (elt tempargs i) d))))
-                  (newArg1 (progn (setf (nth argspoint copyArgs) temp1) copyArgs))
-                  (newArg2 (progn (setf (nth argspoint args) temp2) args))
-                  (result))
-             (declare (special result))
-             (setf result 
-                   (/ (- (apply func newArg1)
-                         (apply func newArg2))
-                      (* 2 d)))
-             (return-from partial-derivative result)))
-          ((typep tempargs 'integer)
-           (let* ((copyArgs (copy-list args))
-                  (newArg1 (progn (setf (nth argspoint args) (+ d tempargs))
-                                  args))
+    (cond ((typep tempargs 'array) 
+           (let* ((len-array (length tempargs))
+                   (copyArgs (copy-list realArgs))
+                   (temp1 (*list-to-array
+                           (loop for i from 0 to (1- len-array) collect
+                                (+ (elt tempargs i) d))))
+                   (temp2 (*list-to-array
+                           (loop for i from 0 to (1- len-array) collect
+                                (- (elt tempargs i) d))))
+                   (newArg1 (progn (setf (nth argspoint copyArgs) temp1) copyArgs))
+                  (newArg2 (progn (setf (nth argspoint realArgs) temp2) realArgs)))
+              `(/ (- (funcall ,func ,@newArg1)
+                     (funcall ,func ,@newArg2))
+                    (* 2 ,d))))
+          
+          ((typep tempargs 'integer) 
+           (let* ((copyArgs (copy-list realArgs))
+                   (newArg1 (progn (setf (nth argspoint realArgs) (+ tempargs d))
+                                  realArgs))
                   (newArg2 (progn (setf (nth argspoint copyArgs) (- tempargs d))
-                                  copyArgs))
-                  (result))
-             (declare (special result))
-             (setf result
-                   (/ (- (apply func newArg1)
-                         (apply func newArg2))
-                      (* 2 d)))
-           (return-from partial-derivative result))))))
+                                  copyArgs)))
+              (declare (special result))
+              `(/ (- (funcall ,func ,@newArg1)
+                          (funcall ,func ,@newArg2))
+                    (* 2 ,d)))))))
+
