@@ -36,7 +36,7 @@
         (result)
         (len-sample (length x)))
     (declare (special temp))
-    (setf temp 
+    (setf temp ;There is the array multify methond below
           (loop for i-x across X
              for i-theta across theta sum
                (* i-x i-theta)))
@@ -51,7 +51,7 @@
     (declare (inline *list-to-array))
     (cond ((typep tempargs 'array) 
            (let* ((len-array (length tempargs))
-                   (copyArgs (copy-list realArgs))
+                  (copyArgs (copy-list realArgs))
                    (temp1 (*list-to-array
                            (loop for i from 0 to (1- len-array) collect
                                 (+ (elt tempargs i) d))))
@@ -70,8 +70,8 @@
                                   realArgs))
                   (newArg2 (progn (setf (nth argspoint copyArgs) (- tempargs d))
                                   copyArgs)))
-              (declare (special result))
               `(/ (- (funcall ,func ,@newArg1)
                           (funcall ,func ,@newArg2))
                     (* 2 ,d)))))))
+
 
