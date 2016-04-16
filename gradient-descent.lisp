@@ -40,10 +40,19 @@
           (loop for i-x across X
              for i-theta across theta sum
                (* i-x i-theta)))
-    (setf result (/ (* (- temp y) (- temp y))
-                    (* 2d0 len-sample)))
+    (setf result (* (- temp y) (- temp y)))
     result))
 
+(defun partial-derivative (X theta y)
+  (let ((temp))
+    (/
+    (- (loop for i-x across X
+          for i-theta across theta sum
+            (* i-x i-theta))
+       y)
+    ))
+
+#|
 (defmacro partial-derivative (argspoint func args &optional (d (expt 2 -100)))
   "to calculate the partial-derivative. argspoint is which args need to caculate partial derivative."
   (let ((realArgs (cadr args))
@@ -73,5 +82,7 @@
               `(/ (- (funcall ,func ,@newArg1)
                           (funcall ,func ,@newArg2))
                     (* 2 ,d)))))))
+|#
+
 
 
