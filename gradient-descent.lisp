@@ -20,7 +20,7 @@
          (ar (make-array len :initial-contents ll)))
     ar))
 
-(defun readData ()
+(defun read-data ()
   (with-open-file (f #P"./testData.txt"
                      :direction :input)
     (declare (inline *list-to-array))
@@ -30,59 +30,44 @@
           (pp (print ar) (print ar)))
         ((eql l 'eof) "Finsh read data"))))
 
-(defun computeCost (X theta y)
-  "X is sample, and is a array. y is result."
-  (let ((temp)
-        (result)
-        (len-sample (length x)))
-    (declare (special temp))
-    (setf temp ;There is the array multify methond below
-          (loop for i-x across X
-             for i-theta across theta sum
-               (* i-x i-theta)))
-    (setf result (* (- temp y) (- temp y)))
+(defun array-slice (m i)
+  "only work for two dimensions matrix. i is index number"
+  (let* ((dim (array-dimensions m))
+         (colNum (cadr dim)))
+    (return-from array-slice (make-array colNum :initial-contents 
+                        (loop for id from 0 to (1- colNum) collect
+                             (aref m i id))))))
+
+(declaim (inline array-slice))
+
+(defun array-multiply (array1 array2)
+  (return-from array-multiply
+    (loop for i across array1
+       for ii across array2 sum
+         (* i ii))))
+
+(declaim (inline array-multiply))
+
+(defun compute-cost (X theta y)
+  "X is matrix. y is result."
+  (let ((result)
+        (rowNum (1- (elt (array-dimensions X) 0))))
+    (setf result 
+    (loop for r from 0 to rowNum for temp = (array-slice X r) sum
+         (expt
+          (- (array-multiply temp theta) (elt y r)) 2)))
     result))
 
 (defun partial-derivative (X theta y)
-  (let ((temp))
-    (/
-    (- (loop for i-x across X
-          for i-theta across theta sum
-            (* i-x i-theta))
-       y)
-    ))
-
-#|
-(defmacro partial-derivative (argspoint func args &optional (d (expt 2 -100)))
-  "to calculate the partial-derivative. argspoint is which args need to caculate partial derivative."
-  (let ((realArgs (cadr args))
-        (tempargs (nth argspoint (cadr args))))
-    (declare (inline *list-to-array))
-    (cond ((typep tempargs 'array) 
-           (let* ((len-array (length tempargs))
-                  (copyArgs (copy-list realArgs))
-                   (temp1 (*list-to-array
-                           (loop for i from 0 to (1- len-array) collect
-                                (+ (elt tempargs i) d))))
-                   (temp2 (*list-to-array
-                           (loop for i from 0 to (1- len-array) collect
-                                (- (elt tempargs i) d))))
-                   (newArg1 (progn (setf (nth argspoint copyArgs) temp1) copyArgs))
-                  (newArg2 (progn (setf (nth argspoint realArgs) temp2) realArgs)))
-              `(/ (- (funcall ,func ,@newArg1)
-                     (funcall ,func ,@newArg2))
-                    (* 2 ,d))))
-          
-          ((typep tempargs 'integer) 
-           (let* ((copyArgs (copy-list realArgs))
-                   (newArg1 (progn (setf (nth argspoint realArgs) (+ tempargs d))
-                                  realArgs))
-                  (newArg2 (progn (setf (nth argspoint copyArgs) (- tempargs d))
-                                  copyArgs)))
-              `(/ (- (funcall ,func ,@newArg1)
-                          (funcall ,func ,@newArg2))
-                    (* 2 ,d)))))))
-|#
-
-
-
+  "X is a r*c matrix"
+  (let ((result)
+        (colNum (1- (elt (array-dimensions X) 1)))
+        (rowNum (1- (elt (array-dimensions X) 0))))
+    (setf result 
+          (loop for c from 0 to colNum collect
+               (/
+               (loop for r from 0 to rowNum for temp = (array-slice X r) sum
+                    (* (- (array-multiply temp theta) (elt y r))
+                       (elt temp c)))
+               (1+ rowNum))))
+    result))
