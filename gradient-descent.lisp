@@ -21,14 +21,16 @@
     ar))
 
 (defun read-data ()
-  (with-open-file (f #P"./testData.txt"
-                     :direction :input)
-    (declare (inline *list-to-array))
-    (do* ((l (read-line f) (read-line f nil 'eof))
-          (x (get-num-out l) (if (eql l 'eof) '(0) (get-num-out l)))
-          (ar (*list-to-array x) (*list-to-array x))
-          (pp (print ar) (print ar)))
-        ((eql l 'eof) "Finsh read data"))))
+  (let ((result))
+    (with-open-file (f #P"./testData.txt"
+                       :direction :input)
+      (declare (inline *list-to-array))
+      (do* ((l (read-line f) (read-line f nil))
+            (x (get-num-out l) (if (not l) nil (get-num-out l)))
+            (ar (*list-to-array x) (*list-to-array x))
+            (p (push ar result) (push ar result)))
+           ((not l) (print "Finsh read data" ))))
+    (cdr result)))
 
 (defun array-slice (m i)
   "only work for two dimensions matrix. i is index number"
@@ -71,3 +73,19 @@
                        (elt temp c)))
                (1+ rowNum))))
     result))
+
+;;; exercise below
+;;;
+;;;
+
+(defvar *X*)
+(setf *X*
+      (let ((temp
+             (loop for ar in (read-data) collect
+                  (list 1 (elt ar 0)))))
+        (make-array (list (length temp) (length (car temp))) :initial-contents temp)))
+
+(defvar *y*)
+(setf *y*
+      (loop for ar in (read-data) collect
+           (elt ar 1)))
