@@ -1,9 +1,8 @@
 (defun parse-string-to-float (line)
   (with-input-from-string (s line)
-    (loop
-       :for num := (read s nil nil)
-       :while num
-       :collect num)))
+    (loop for num = (read s nil nil)
+       while num
+       collect num)))
 
 (defun get-num-out (str)
   (declare (inline parse-string-to-float))
@@ -20,9 +19,9 @@
          (ar (make-array len :initial-contents ll)))
     ar))
 
-(defun read-data ()
+(defun read-data (path)
   (let ((result))
-    (with-open-file (f #P"./testData.txt"
+    (with-open-file (f path
                        :direction :input)
       (declare (inline *list-to-array))
       (do* ((l (read-line f) (read-line f nil))
@@ -58,7 +57,7 @@
     (loop for r from 0 to rowNum for temp = (array-slice X r) sum
          (expt
           (- (array-multiply temp theta) (elt y r)) 2)))
-    result))
+    (/ result (* 2 rowNum))))
 
 (defun partial-derivative (X theta y)
   "X is a r*c matrix"
@@ -74,6 +73,14 @@
                (1+ rowNum))))
     result))
 
+(defun gradient-descent (X theta y alpha iterTime)
+  (dotimes (i iterTime theta)
+    (let ((pd (partial-derivative X theta y)))
+      (loop for ind from 0 to (1- (length theta)) do
+           (setf (elt theta ind)
+                 (- (elt theta ind) (* alpha (elt pd ind)))))
+      (print theta))))
+
 ;;; exercise below
 ;;;
 ;;;
@@ -81,11 +88,17 @@
 (defvar *X*)
 (setf *X*
       (let ((temp
-             (loop for ar in (read-data) collect
+             (loop for ar in (read-data "./testData.txt") collect
                   (list 1 (elt ar 0)))))
         (make-array (list (length temp) (length (car temp))) :initial-contents temp)))
 
 (defvar *y*)
 (setf *y*
-      (loop for ar in (read-data) collect
+      (loop for ar in (read-data "./testData.txt") collect
            (elt ar 1)))
+
+(defvar *theta*)
+(setf *theta* (make-array 2 :initial-element 0))
+
+(compute-cost *X* *theta* *y*)
+(gradient-descent *X* *theta* *y* 0.01 1500)
