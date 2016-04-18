@@ -1,11 +1,25 @@
+(defpackage #:gradient-descent
+  (:use #:CL)
+  (:nicknames #:GD)
+  (:export #:parse-string-to-float
+           #:get-num-out
+           #:*list-to-array
+           #:read-data
+           #:array-slice
+           #:array-multiply
+           ))
+
+(in-package gradient-descent)
+
 (defun parse-string-to-float (line)
   (with-input-from-string (s line)
     (loop for num = (read s nil nil)
        while num
        collect num)))
 
+(declaim (inline parse-string-to-float))
+
 (defun get-num-out (str)
-  (declare (inline parse-string-to-float))
   (do* ((pos (position #\  str) (position #\  (subseq str (+ 1 poss))))
         (strr (subseq str 0 pos) (subseq str (1+ poss) (if (eql pos nil) nil (+ 1 poss pos))))
         (num (car (parse-string-to-float strr)) (car (parse-string-to-float strr)))
@@ -19,11 +33,12 @@
          (ar (make-array len :initial-contents ll)))
     ar))
 
+(declaim (inline *list-to-array))
+
 (defun read-data (path)
   (let ((result))
     (with-open-file (f path
                        :direction :input)
-      (declare (inline *list-to-array))
       (do* ((l (read-line f) (read-line f nil))
             (x (get-num-out l) (if (not l) nil (get-num-out l)))
             (ar (*list-to-array x) (*list-to-array x))
