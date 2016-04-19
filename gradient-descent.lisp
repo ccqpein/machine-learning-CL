@@ -1,15 +1,4 @@
-(defpackage #:gradient-descent
-  (:use #:CL)
-  (:nicknames #:GD)
-  (:export #:parse-string-to-float
-           #:get-num-out
-           #:*list-to-array
-           #:read-data
-           #:array-slice
-           #:array-multiply
-           ))
-
-(in-package gradient-descent)
+(in-package #:gradient-descent)
 
 (defun parse-string-to-float (line)
   (with-input-from-string (s line)
