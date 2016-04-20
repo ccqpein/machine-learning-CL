@@ -88,7 +88,7 @@
 ;;; exercise below
 ;;;
 ;;;
-
+#|
 (defvar *X*)
 (setf *X*
       (let ((temp
@@ -105,4 +105,4 @@
 (setf *theta* (make-array 2 :initial-element 0))
 
 (compute-cost *X* *theta* *y*)
-(gradient-descent *X* *theta* *y* 0.01 1500)
+(gradient-descent *X* *theta* *y* 0.01 1500)|#

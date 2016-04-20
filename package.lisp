@@ -11,3 +11,7 @@
            #:array-multiply
            ))
 
+(defpackage #:logistic-regression
+  (:use #:CL #:GD)
+  (:nicknames #:LR)
+  )
