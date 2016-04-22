@@ -1,3 +1,5 @@
+(load "./package.lisp")
+(load "./logistic-regression.lisp")
 (in-package #:gradient-descent)
 
 (defun parse-string-to-float (line)

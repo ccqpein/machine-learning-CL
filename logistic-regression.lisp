@@ -1,4 +1,5 @@
-(load "./load.lisp")
+(load "./package.lisp")
+(load "./gradient-descent.lisp")
 (in-package #:logistic-regression)
 
 (defun logistic-regression (z)
