@@ -7,3 +7,8 @@
   (let ((g (/ 1 (+ 1 (exp (* -1 z))))))
     (if (>= g 0.5) 1 0)))
 
+(declaim (inline logistic-regression))
+
+(defun compute-cost (X theta y)
+  "calculate the cost"
+  )
