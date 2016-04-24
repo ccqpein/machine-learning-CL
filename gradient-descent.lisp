@@ -1,5 +1,4 @@
 (load "./package.lisp")
-(load "./logistic-regression.lisp")
 (in-package #:gradient-descent)
 
 (defun parse-string-to-float (line)
@@ -60,9 +59,9 @@
   (let ((result)
         (rowNum (1- (elt (array-dimensions X) 0))))
     (setf result 
-    (loop for r from 0 to rowNum for temp = (array-slice X r) sum
-         (expt
-          (- (array-multiply temp theta) (elt y r)) 2)))
+          (loop for r from 0 to rowNum for temp = (array-slice X r) sum
+               (expt
+                (- (array-multiply temp theta) (elt y r)) 2)))
     (/ result (* 2 rowNum))))
 
 (defun partial-derivative (X theta y)
