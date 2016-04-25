@@ -19,3 +19,25 @@
                    (- (log (logistic-regression (array-multiply temp theta)) 10))
                    (- (log (- 1 (logistic-regression (array-multiply temp theta))) 10)))))
     (/ result rowNum)))
+
+(defun partial-derivative-lr (X theta y)
+  "X is a r*c matrix"
+  (let ((result)
+        (colNum (1- (elt (array-dimensions X) 1)))
+        (rowNum (1- (elt (array-dimensions X) 0))))
+    (setf result
+          (loop for c from 0 to colNum collect
+                (loop for r from 0 to rowNum for temp = (array-slice X r) sum
+                     (* (- (logistic-regression (array-multiply temp theta)) (elt y r))
+                        (elt temp c)))))
+    result))
+
+(defun gradient-descent-lr (X theta y alpha iterTime)
+  (dotimes (i iterTime theta)
+    (let ((pd (partial-derivative-lr X theta y)))
+      (loop for ind from 0 to (1- (length theta)) do
+           (setf (elt theta ind)
+                 (- (elt theta ind) (* alpha (elt pd ind)))))
+      (print theta))))
+
+;;; exercise below
