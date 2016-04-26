@@ -41,3 +41,17 @@
       (print theta))))
 
 ;;; exercise below
+
+(defvar *X*)
+(setf *X*
+      (let ((temp
+             (loop for ar in (read-data "./testdata/ex2data1.txt") collect
+                  (list 1 (elt ar 0) (elt ar 1)))))
+        (make-array (list (length temp) (length (car temp))) :initial-contents temp)))
+
+(defvar *y*)
+(setf *y*
+      (loop for ar in (read-data "./testdata/ex2data1.txt") collect
+           (elt ar 2)))
+
+
