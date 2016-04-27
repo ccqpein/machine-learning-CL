@@ -16,8 +16,8 @@
     (setf result
           (loop for r from 0 to rowNum for temp = (array-slice X r) sum
                (if (= (nth r y) 1)
-                   (- (log (logistic-regression (array-multiply temp theta)) 10))
-                   (- (log (- 1 (logistic-regression (array-multiply temp theta))) 10)))))
+                   (- (log (logistic-regression (array-multiply temp theta))))
+                   (- (log (- 1 (logistic-regression (array-multiply temp theta))))))))
     (/ result rowNum)))
 
 (defun partial-derivative-lr (X theta y)
@@ -27,9 +27,11 @@
         (rowNum (1- (elt (array-dimensions X) 0))))
     (setf result
           (loop for c from 0 to colNum collect
+               (/
                 (loop for r from 0 to rowNum for temp = (array-slice X r) sum
                      (* (- (logistic-regression (array-multiply temp theta)) (elt y r))
-                        (elt temp c)))))
+                        (elt temp c)))
+               (1+ rowNum))))
     result))
 
 (defun gradient-descent-lr (X theta y alpha iterTime)
@@ -38,7 +40,8 @@
       (loop for ind from 0 to (1- (length theta)) do
            (setf (elt theta ind)
                  (- (elt theta ind) (* alpha (elt pd ind)))))
-      (print theta))))
+                                        ;(print theta)
+      )))
 
 ;;; exercise below
 
@@ -54,4 +57,8 @@
       (loop for ar in (read-data "./testdata/ex2data1.txt") collect
            (elt ar 2)))
 
+(defvar *theta*)
+(setf *theta* (make-array 3 :initial-element 0))
 
+(compute-cost *X* *theta* *y*)
+(partial-derivative-lr *X* *theta* *y*)
