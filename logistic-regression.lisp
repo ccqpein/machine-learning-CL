@@ -4,12 +4,9 @@
 
 (defun logistic-regression (z)
   "calculate the g(z), when g(z) larger than 0.5, return 1, else return 0"
-  ;(print z)
-  ;(print "here")
   (let ((g))
     (setf g
           (1+ (exp (- z))))
-    ;(print g)
     (/ 1 g)))
 
 (declaim (inline logistic-regression))
@@ -20,7 +17,7 @@
         (rowNum (1- (elt (array-dimensions X) 0))))
     (loop for r from 0 to rowNum for temp = (array-slice X r) do
          (progn
-           (print (log (logistic-regression (array-multiply temp theta))))
+           ;(print (log (logistic-regression (array-multiply temp theta))))
          (setf result
                (+ result
                   (+ (* (nth r y)
@@ -43,18 +40,18 @@
                (1+ rowNum))))
     result))
 
+
+;; Sbcl dont have the fminunc function which in matlab, so I need figure out the new
+;; method to fix that
+;; the answer is theta = -24.9330 0.2044 0.1996 cost = 0.2035
 (defun gradient-descent-lr (X theta y alpha iterTime)
   "use some functions get mini value"
   (let ((thetaRe)
         (miniV))
-    (dotimes (i iterTime thetaRe)
+    (dotimes (i iterTime)
       (let ((pd (partial-derivative-lr X theta y))
-            (pp "ii")
-            #|(pppp (print X))
-            (ppppp (print theta))
-            (pppppp (print y))|#
             (temp (compute-cost X theta y)))
-        (print i) (print temp) (print pp)
+        (print i)
         (setf miniV 
               (cond ((= i 0) (setf miniV temp))
                     ((< temp miniV) (setf miniV temp))
@@ -63,11 +60,12 @@
               (cond ((= i 0) (setf thetaRe theta))
                     ((< temp miniV) (setf thetaRe theta))
                     (t thetaRe)))
-        (print miniV)
         (loop for ind from 0 to (1- (length theta)) do
              (setf (elt theta ind)
-                   (- (elt theta ind) (* alpha (elt pd ind)))))))
+                   (- (elt theta ind) (* alpha (elt pd ind)))))
+        (print thetaRe)))
     ))
+
 
 ;;; exercise below
 
@@ -86,5 +84,5 @@
 (defvar *theta*)
 (setf *theta* (make-array 3 :initial-element 0))
 
-(compute-cost *X* *theta* *y*)
-(partial-derivative-lr *X* *theta* *y*)
+;(compute-cost *X* *theta* *y*)
+;(partial-derivative-lr *X* *theta* *y*)
