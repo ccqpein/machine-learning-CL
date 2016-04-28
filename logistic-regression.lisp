@@ -2,29 +2,42 @@
 (load "./gradient-descent.lisp")
 (in-package #:logistic-regression)
 
+(setf *read-default-float-format* 'long-float)
 (defun logistic-regression (z)
   "calculate the g(z), when g(z) larger than 0.5, return 1, else return 0"
-  (let ((g))
+  (let ((g 0.0l0))
     (setf g
-          (1+ (exp (- z))))
-    (/ 1 g)))
+          (+ 1.0l0 (exp (- z))))
+    (if (= g 1.0)
+        (return-from logistic-regression (- 1 1.0e-16))
+        (return-from logistic-regression (/ 1.0l0 g)))))
 
 (declaim (inline logistic-regression))
 
 (defun compute-cost (X theta y)
   "calculate the cost"
-  (let ((result 0)
-        (rowNum (1- (elt (array-dimensions X) 0))))
-    (loop for r from 0 to rowNum for temp = (array-slice X r) do
-         (progn
-           ;(print (log (logistic-regression (array-multiply temp theta))))
-         (setf result
-               (+ result
-                  (+ (* (nth r y)
-                        (log (logistic-regression (array-multiply temp theta))))
-                     (* (- 1 (nth r y))
-                        (log (- 1 (logistic-regression (array-multiply temp theta))))))))))
-    (/ result (- rowNum))))
+  (let ((result 1)
+        (rowNum (- (elt (array-dimensions X) 0) 1)))
+    (setf result
+          (loop for r from 0 to rowNum sum
+               (+ (* (nth r y)
+                     (log (logistic-regression (array-multiply (array-slice X r) theta))))
+                  (* (- 1 (nth r y))
+                     (log (- 1 (logistic-regression (array-multiply (array-slice X r) theta))))))))
+    (print result)
+    (/ (- result) (1+ rowNum))))
+
+(defun compute-cost-2 (X theta y)
+  (let ((result 0))
+    (dotimes (r (elt (array-dimensions X) 0)
+              (/ (- result) (elt (array-dimensions X) 0)))
+      (print r)
+      (setf result (+ result
+                      (+ (* (nth r y)
+                            (log (logistic-regression (array-multiply (array-slice X r) theta))))
+                         (* (- 1 (nth r y))
+                            (log (- 1 (logistic-regression (array-multiply (array-slice X r) theta)))))))))
+    ))
 
 (defun partial-derivative-lr (X theta y)
   "X is a r*c matrix"
@@ -49,9 +62,10 @@
   (let ((thetaRe)
         (miniV))
     (dotimes (i iterTime)
-      (let ((pd (partial-derivative-lr X theta y))
+      (let* ((pd (partial-derivative-lr X theta y))
+            (p (print i))
+            (pp (print pd))
             (temp (compute-cost X theta y)))
-        (print i)
         (setf miniV 
               (cond ((= i 0) (setf miniV temp))
                     ((< temp miniV) (setf miniV temp))
