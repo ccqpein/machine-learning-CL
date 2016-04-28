@@ -4,21 +4,30 @@
 
 (defun logistic-regression (z)
   "calculate the g(z), when g(z) larger than 0.5, return 1, else return 0"
-  (let ((g (/ 1 (+ 1 (exp (* -1 z))))))
-    g))
+  ;(print z)
+  ;(print "here")
+  (let ((g))
+    (setf g
+          (1+ (exp (- z))))
+    ;(print g)
+    (/ 1 g)))
 
 (declaim (inline logistic-regression))
 
 (defun compute-cost (X theta y)
   "calculate the cost"
-  (let ((result)
+  (let ((result 0)
         (rowNum (1- (elt (array-dimensions X) 0))))
-    (setf result
-          (loop for r from 0 to rowNum for temp = (array-slice X r) sum
-               (if (= (nth r y) 1)
-                   (- (log (logistic-regression (array-multiply temp theta))))
-                   (- (log (- 1 (logistic-regression (array-multiply temp theta))))))))
-    (/ result rowNum)))
+    (loop for r from 0 to rowNum for temp = (array-slice X r) do
+         (progn
+           (print (log (logistic-regression (array-multiply temp theta))))
+         (setf result
+               (+ result
+                  (+ (* (nth r y)
+                        (log (logistic-regression (array-multiply temp theta))))
+                     (* (- 1 (nth r y))
+                        (log (- 1 (logistic-regression (array-multiply temp theta))))))))))
+    (/ result (- rowNum))))
 
 (defun partial-derivative-lr (X theta y)
   "X is a r*c matrix"
@@ -35,13 +44,30 @@
     result))
 
 (defun gradient-descent-lr (X theta y alpha iterTime)
-  (dotimes (i iterTime theta)
-    (let ((pd (partial-derivative-lr X theta y)))
-      (loop for ind from 0 to (1- (length theta)) do
-           (setf (elt theta ind)
-                 (- (elt theta ind) (* alpha (elt pd ind)))))
-                                        ;(print theta)
-      )))
+  "use some functions get mini value"
+  (let ((thetaRe)
+        (miniV))
+    (dotimes (i iterTime thetaRe)
+      (let ((pd (partial-derivative-lr X theta y))
+            (pp "ii")
+            #|(pppp (print X))
+            (ppppp (print theta))
+            (pppppp (print y))|#
+            (temp (compute-cost X theta y)))
+        (print i) (print temp) (print pp)
+        (setf miniV 
+              (cond ((= i 0) (setf miniV temp))
+                    ((< temp miniV) (setf miniV temp))
+                    (t miniV))
+              thetaRe
+              (cond ((= i 0) (setf thetaRe theta))
+                    ((< temp miniV) (setf thetaRe theta))
+                    (t thetaRe)))
+        (print miniV)
+        (loop for ind from 0 to (1- (length theta)) do
+             (setf (elt theta ind)
+                   (- (elt theta ind) (* alpha (elt pd ind)))))))
+    ))
 
 ;;; exercise below
 
