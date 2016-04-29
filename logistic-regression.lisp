@@ -27,6 +27,7 @@
     (print result)
     (/ (- result) (1+ rowNum))))
 
+#|
 (defun compute-cost-2 (X theta y)
   (let ((result 0))
     (dotimes (r (elt (array-dimensions X) 0)
@@ -37,7 +38,7 @@
                             (log (logistic-regression (array-multiply (array-slice X r) theta))))
                          (* (- 1 (nth r y))
                             (log (- 1 (logistic-regression (array-multiply (array-slice X r) theta)))))))))
-    ))
+    ))|#
 
 (defun partial-derivative-lr (X theta y)
   "X is a r*c matrix"
@@ -81,8 +82,15 @@
     ))
 
 
-;;; exercise below
+;; Get the wrong function back
+(defmacro partial-derivative (whicharg func arglist &optional (d (expt 2 -100)))
+  "to calculate the partial-derivative. argspoint is which args need to caculate partial derivative."
+  (print whicharg) (print func) (print arglist)
+  (print (eql whicharg (elt arglist 0)))
 
+  )
+
+;;; exercise below
 (defvar *X*)
 (setf *X*
       (let ((temp
