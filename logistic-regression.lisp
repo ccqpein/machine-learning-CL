@@ -69,11 +69,12 @@
         (print thetaRe)))
     ))
 
-(defun partial-derivative-ge (func arglist &optional (which nil) &key (d (expt 2 -100)))
+(defun partial-derivative-ge (func arglist &optional (which nil) &key (d (expt 2 -4)))
   "to calculate the partial-derivative. argspoint is which args need to caculate partial derivative. Use method: if function args are '(1 2), do not need which; if your function need '(#(1 2 3) #(1 3 3)), you need the which to point which arg you want to calculate partial derivative."
   (let* ((args (if (eql which nil)
                    arglist
                    (nth (1- which) arglist)))
+         ;(pp (print args))
          (argslen (length args)))
     (loop for i from 0 to (1- argslen) collect
          (let* ((argsTemp (copy-seq args))
