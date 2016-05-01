@@ -3,6 +3,7 @@
 (in-package #:logistic-regression)
 
 (setf *read-default-float-format* 'long-float)
+
 (defun logistic-regression (z)
   "calculate the g(z), when g(z) larger than 0.5, return 1, else return 0"
   (let ((g 0.0l0))
@@ -26,19 +27,6 @@
                      (log (- 1 (logistic-regression (array-multiply (array-slice X r) theta))))))))
     (print result)
     (/ (- result) (1+ rowNum))))
-
-#|
-(defun compute-cost-2 (X theta y)
-  (let ((result 0))
-    (dotimes (r (elt (array-dimensions X) 0)
-              (/ (- result) (elt (array-dimensions X) 0)))
-      (print r)
-      (setf result (+ result
-                      (+ (* (nth r y)
-                            (log (logistic-regression (array-multiply (array-slice X r) theta))))
-                         (* (- 1 (nth r y))
-                            (log (- 1 (logistic-regression (array-multiply (array-slice X r) theta)))))))))
-    ))|#
 
 (defun partial-derivative-lr (X theta y)
   "X is a r*c matrix"
@@ -64,8 +52,8 @@
         (miniV))
     (dotimes (i iterTime)
       (let* ((pd (partial-derivative-lr X theta y))
-            (p (print i))
-            (pp (print pd))
+            ;(p (print i))
+            ;(pp (print pd))
             (temp (compute-cost X theta y)))
         (setf miniV 
               (cond ((= i 0) (setf miniV temp))
@@ -81,14 +69,35 @@
         (print thetaRe)))
     ))
 
-
-;; Get the wrong function back
-(defmacro partial-derivative (whicharg func arglist &optional (d (expt 2 -100)))
-  "to calculate the partial-derivative. argspoint is which args need to caculate partial derivative."
-  (print whicharg) (print func) (print arglist)
-  (print (eql whicharg (elt arglist 0)))
-
-  )
+(defun partial-derivative-ge (func arglist &optional (which nil) &key (d (expt 2 -100)))
+  "to calculate the partial-derivative. argspoint is which args need to caculate partial derivative. Use method: if function args are '(1 2), do not need which; if your function need '(#(1 2 3) #(1 3 3)), you need the which to point which arg you want to calculate partial derivative."
+  (let* ((args (if (eql which nil)
+                   arglist
+                   (nth (1- which) arglist)))
+         (argslen (length args)))
+    (loop for i from 0 to (1- argslen) collect
+         (let* ((argsTemp (copy-seq args))
+                (num (elt argsTemp i))
+                (Temp1 (if (eql which nil)
+                           (progn (setf (elt argsTemp i) (+ num d))
+                                  (copy-seq argsTemp))
+                           (progn (setf (elt argsTemp i) (+ num d))
+                                  (let* ((newargs (copy-seq arglist)))
+                                    (setf (nth (1- which) newargs)
+                                          (copy-seq argsTemp))
+                                    newargs))))
+                (Temp2 (if (eql which nil)
+                           (progn (setf (elt argsTemp i) (- num d))
+                                  (copy-seq argsTemp))
+                           (progn (setf (elt argsTemp i) (- num d))
+                                  (let* ((newargs (copy-seq arglist)))
+                                    (setf (nth (1- which) newargs)
+                                          (copy-seq argsTemp))
+                                    newargs)))))
+                                        ;(print Temp1) (print Temp2) ;test result
+           (/ (- (apply func Temp1) (apply func Temp2))
+              (* 2 d))))
+    ))
 
 ;;; exercise below
 (defvar *X*)
