@@ -25,7 +25,7 @@
                      (log (logistic-regression (array-multiply (array-slice X r) theta))))
                   (* (- 1 (nth r y))
                      (log (- 1 (logistic-regression (array-multiply (array-slice X r) theta))))))))
-    (print result)
+    ;(print result)
     (/ (- result) (1+ rowNum))))
 
 (defun partial-derivative-lr (X theta y)
@@ -69,12 +69,13 @@
         (print thetaRe)))
     ))
 
-(defun partial-derivative-ge (func arglist &optional (which nil) &key (d (expt 2 -4)))
+(defun partial-derivative-ge (func arglist &key (which nil) (d (expt 2 -5)))
   "to calculate the partial-derivative. argspoint is which args need to caculate partial derivative. Use method: if function args are '(1 2), do not need which; if your function need '(#(1 2 3) #(1 3 3)), you need the which to point which arg you want to calculate partial derivative."
-  (let* ((args (if (eql which nil)
+  (let* ((arglist (loop for i in arglist collect
+                       (eval i)))
+         (args (if (eql which nil)
                    arglist
                    (nth (1- which) arglist)))
-         ;(pp (print args))
          (argslen (length args)))
     (loop for i from 0 to (1- argslen) collect
          (let* ((argsTemp (copy-seq args))
@@ -99,6 +100,10 @@
            (/ (- (apply func Temp1) (apply func Temp2))
               (* 2 d))))
     ))
+
+(defun find-function-min (func arglist &key (which nil) (alpha 0.0001) (iterTime 1000))
+  "find the min value in special function"
+  )
 
 ;;; exercise below
 (defvar *X*)
