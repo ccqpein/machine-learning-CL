@@ -47,10 +47,11 @@
 (declaim (inline array-slice))
 
 (defun array-multiply (array1 array2)
-  (return-from array-multiply
-    (loop for i across array1
-       for ii across array2 sum
-         (* i ii))))
+  (let ((result
+         (loop for i across array1
+            for ii across array2 sum
+              (* i ii))))
+    (coerce result 'double-float)))
 
 (declaim (inline array-multiply))
 

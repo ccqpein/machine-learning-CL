@@ -2,32 +2,34 @@
 (load "./gradient-descent.lisp")
 (in-package #:logistic-regression)
 
-(setf *read-default-float-format* 'long-float)
-
 (defun logistic-regression (z)
   "calculate the g(z), when g(z) larger than 0.5, return 1, else return 0"
   (let ((g 0.0l0))
     (setf g
           (+ 1.0l0 (exp (- z))))
     (if (= g 1.0)
-        (return-from logistic-regression (- 1 1.0e-16))
-        (return-from logistic-regression (/ 1.0l0 g)))))
+        (return-from logistic-regression (- 1 1.0e-3))
+        (return-from logistic-regression (/ 1.0L0 g)))))
 
 (declaim (inline logistic-regression))
 
 (defun compute-cost (X theta y)
   "calculate the cost"
-  (let ((result 1)
+  (let ((result 1L0)
         (rowNum (- (elt (array-dimensions X) 0) 1)))
     (setf result
           (loop for r from 0 to rowNum sum
                (+ (* (nth r y)
-                     (log (logistic-regression (array-multiply (array-slice X r) theta))))
+                     (log (logistic-regression (the double-float (array-multiply (array-slice X r)
+                                                               theta)))))
                   (* (- 1 (nth r y))
-                     (log (- 1 (logistic-regression (array-multiply (array-slice X r) theta))))))))
-    ;(print result)
-    (/ (- result) (1+ rowNum))))
-
+                     (log (- 1 (logistic-regression (the double-float (array-multiply (array-slice X r)
+                                                                    theta)))))))))
+                                        ;(print result)
+;    (coerce result 'single-float)
+    (/ (- result) (1+ rowNum)))
+  )
+  
 (defun partial-derivative-lr (X theta y)
   "X is a r*c matrix"
   (let ((result)
@@ -46,30 +48,8 @@
 ;; Sbcl dont have the fminunc function which in matlab, so I need figure out the new
 ;; method to fix that
 ;; the answer is theta = -24.9330 0.2044 0.1996 cost = 0.2035
-(defun gradient-descent-lr (X theta y alpha iterTime)
-  "use some functions get mini value"
-  (let ((thetaRe)
-        (miniV))
-    (dotimes (i iterTime)
-      (let* ((pd (partial-derivative-lr X theta y))
-            ;(p (print i))
-            ;(pp (print pd))
-            (temp (compute-cost X theta y)))
-        (setf miniV 
-              (cond ((= i 0) (setf miniV temp))
-                    ((< temp miniV) (setf miniV temp))
-                    (t miniV))
-              thetaRe
-              (cond ((= i 0) (setf thetaRe theta))
-                    ((< temp miniV) (setf thetaRe theta))
-                    (t thetaRe)))
-        (loop for ind from 0 to (1- (length theta)) do
-             (setf (elt theta ind)
-                   (- (elt theta ind) (* alpha (elt pd ind)))))
-        (print thetaRe)))
-    ))
 
-(defun partial-derivative-ge (func arglist &key (which nil) (d (expt 2 -5)))
+(defun partial-derivative-ge (func arglist &key (which nil) (d (expt 2 -3)))
   "to calculate the partial-derivative. argspoint is which args need to caculate partial derivative. Use method: if function args are '(1 2), do not need which; if your function need '(#(1 2 3) #(1 3 3)), you need the which to point which arg you want to calculate partial derivative."
   (let* ((arglist (loop for i in arglist collect
                        (eval i)))
@@ -97,12 +77,29 @@
                                           (copy-seq argsTemp))
                                     newargs)))))
                                         ;(print Temp1) (print Temp2) ;test result
+           (coerce
            (/ (- (apply func Temp1) (apply func Temp2))
-              (* 2 d))))
+              (* 2 d))
+           'single-float)))
     ))
 
-(defun find-function-min (func arglist &key (which nil) (alpha 0.0001) (iterTime 1000))
+(defun find-function-min (func arglist &key (which nil) (alpha 0.1) (iterTime 10000))
   "find the min value in special function"
+  (dotimes (tt iterTime)
+    (let ((pd (partial-derivative-ge func arglist :which which))
+          (args (eval (elt arglist (1- which)))))
+      (print args)
+      (setf (elt arglist (1- which))
+            (make-array (length args) :initial-contents
+                        (loop for i from 0 to (1- (length args)) collect
+                             (cond ((< (elt pd i) 0) (- (elt args i) alpha))
+                                   ((> (elt pd i) 0) (- (elt args i) alpha))
+                                   (t (elt args i))))))
+      ))
+  (print "done")
+  (print (elt arglist (1- which)))
+  (apply func (loop for i in arglist collect (eval i)))
+  
   )
 
 ;;; exercise below
