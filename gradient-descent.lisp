@@ -51,7 +51,7 @@
          (loop for i across array1
             for ii across array2 sum
               (* i ii))))
-    (coerce result 'double-float)))
+    result))
 
 (declaim (inline array-multiply))
 

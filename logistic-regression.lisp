@@ -8,7 +8,7 @@
     (setf g
           (+ 1.0l0 (exp (- z))))
     (if (= g 1.0)
-        (return-from logistic-regression (- 1 1.0e-3))
+        (return-from logistic-regression (- 1 1.0e-10))
         (return-from logistic-regression (/ 1.0L0 g)))))
 
 (declaim (inline logistic-regression))
@@ -20,14 +20,15 @@
     (setf result
           (loop for r from 0 to rowNum sum
                (+ (* (nth r y)
-                     (log (logistic-regression (the double-float (array-multiply (array-slice X r)
-                                                               theta)))))
+                     (log (logistic-regression (array-multiply (array-slice X r)
+                                                               theta))))
                   (* (- 1 (nth r y))
-                     (log (- 1 (logistic-regression (the double-float (array-multiply (array-slice X r)
-                                                                    theta)))))))))
+                     (log (- 1 (logistic-regression (array-multiply (array-slice X r)
+                                                                    theta))))))))
                                         ;(print result)
-;    (coerce result 'single-float)
-    (/ (- result) (1+ rowNum)))
+    (setf result (/ (- result) (1+ rowNum)))
+    ;(coerce result 'long-float)
+    result)
   )
   
 (defun partial-derivative-lr (X theta y)
@@ -49,7 +50,7 @@
 ;; method to fix that
 ;; the answer is theta = -24.9330 0.2044 0.1996 cost = 0.2035
 
-(defun partial-derivative-ge (func arglist &key (which nil) (d (expt 2 -3)))
+(defun partial-derivative-ge (func arglist &key (which nil) (d (expt 2 -4)))
   "to calculate the partial-derivative. argspoint is which args need to caculate partial derivative. Use method: if function args are '(1 2), do not need which; if your function need '(#(1 2 3) #(1 3 3)), you need the which to point which arg you want to calculate partial derivative."
   (let* ((arglist (loop for i in arglist collect
                        (eval i)))
@@ -58,7 +59,8 @@
                    (nth (1- which) arglist)))
          (argslen (length args)))
     (loop for i from 0 to (1- argslen) collect
-         (let* ((argsTemp (copy-seq args))
+         (let* ((result)
+                (argsTemp (copy-seq args))
                 (num (elt argsTemp i))
                 (Temp1 (if (eql which nil)
                            (progn (setf (elt argsTemp i) (+ num d))
@@ -76,31 +78,34 @@
                                     (setf (nth (1- which) newargs)
                                           (copy-seq argsTemp))
                                     newargs)))))
-                                        ;(print Temp1) (print Temp2) ;test result
-           (coerce
-           (/ (- (apply func Temp1) (apply func Temp2))
-              (* 2 d))
-           'single-float)))
+           ;(print Temp1) (print Temp2) ;test result
+           (setf result
+                 (/ (- (apply func Temp1) (apply func Temp2))
+                    (* 2 d)))
+           result))
     ))
 
-(defun find-function-min (func arglist &key (which nil) (alpha 0.1) (iterTime 10000))
+(defun find-function-min (func arglist &key (which nil) (alpha 0.0007) (iterTime 30000))
   "find the min value in special function"
+  (let ((result)
+        (reArgs))
   (dotimes (tt iterTime)
     (let ((pd (partial-derivative-ge func arglist :which which))
           (args (eval (elt arglist (1- which)))))
-      (print args)
+      ;(print pd)
+      ;(print args)
       (setf (elt arglist (1- which))
             (make-array (length args) :initial-contents
                         (loop for i from 0 to (1- (length args)) collect
-                             (cond ((< (elt pd i) 0) (- (elt args i) alpha))
-                                   ((> (elt pd i) 0) (- (elt args i) alpha))
-                                   (t (elt args i))))))
+                             (cond ((< (elt pd i) 0) (+ (elt args i) alpha))
+                                   ((>= (elt pd i) 0) (- (elt args i) alpha))
+                                   ))))
       ))
-  (print "done")
-  (print (elt arglist (1- which)))
-  (apply func (loop for i in arglist collect (eval i)))
-  
-  )
+  (print "find the min value for function")
+  (setf reArgs (elt arglist (1- which)))
+  (setf result
+        (apply func (loop for i in arglist collect (eval i))))
+  ))
 
 ;;; exercise below
 (defvar *X*)
