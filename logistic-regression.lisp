@@ -27,7 +27,6 @@
                                                                     theta))))))))
                                         ;(print result)
     (setf result (/ (- result) (1+ rowNum)))
-    ;(coerce result 'long-float)
     result)
   )
   
@@ -47,7 +46,7 @@
 
 
 ;; Sbcl dont have the fminunc function which in matlab, so I need figure out the new
-;; method to fix that
+;; method to fix that may 3 2016 fixed
 ;; the answer is theta = -24.9330 0.2044 0.1996 cost = 0.2035
 
 (defun partial-derivative-ge (func arglist &key (which nil) (d (expt 2 -4)))
@@ -89,23 +88,24 @@
   "find the min value in special function"
   (let ((result)
         (reArgs))
-  (dotimes (tt iterTime)
-    (let ((pd (partial-derivative-ge func arglist :which which))
-          (args (eval (elt arglist (1- which)))))
-      ;(print pd)
-      ;(print args)
-      (setf (elt arglist (1- which))
-            (make-array (length args) :initial-contents
-                        (loop for i from 0 to (1- (length args)) collect
-                             (cond ((< (elt pd i) 0) (+ (elt args i) alpha))
-                                   ((>= (elt pd i) 0) (- (elt args i) alpha))
-                                   ))))
-      ))
-  (print "find the min value for function")
-  (setf reArgs (elt arglist (1- which)))
-  (setf result
-        (apply func (loop for i in arglist collect (eval i))))
-  ))
+    (declare (inline partial-derivative-ge))
+    (dotimes (tt iterTime)
+      (let ((pd (partial-derivative-ge func arglist :which which))
+            (args (eval (elt arglist (1- which)))))
+                                        ;(print pd)
+                                        ;(print args)
+        (setf (elt arglist (1- which))
+              (make-array (length args) :initial-contents
+                          (loop for i from 0 to (1- (length args)) collect
+                               (cond ((< (elt pd i) 0) (+ (elt args i) alpha))
+                                     ((>= (elt pd i) 0) (- (elt args i) alpha))
+                                     ))))
+        ))
+    (print "find the min value for function")
+    (setf reArgs (elt arglist (1- which)))
+    (setf result
+          (apply func (loop for i in arglist collect (eval i))))
+    ))
 
 ;;; exercise below
 (defvar *X*)
