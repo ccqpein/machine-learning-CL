@@ -91,7 +91,7 @@
     (declare (inline partial-derivative-ge))
     (dotimes (tt iterTime)
       (let ((pd (partial-derivative-ge func arglist :which which))
-            (costValue (apply func (loop for i in arglist collect (eval i))))
+            ;(costValue (apply func (loop for i in arglist collect (eval i))))
             (args (eval (elt arglist (1- which)))))
                                         ;(print pd)
                                         ;(print args)
@@ -101,14 +101,13 @@
                                (cond ((< (elt pd i) 0) (+ (elt args i) alpha))
                                      ((>= (elt pd i) 0) (- (elt args i) alpha))
                                      ))))
-        (if (< (apply func (loop for i in arglist collect (eval i))) costValue)
+        #|(if (< (apply func (loop for i in arglist collect (eval i))) costValue)
             (setf reArgs (elt arglist (1- which))
                   result (apply func (loop for i in arglist collect (eval i))))
-            )
+            )|#
         ))
     (print "find the min value for function")
-    (print reArgs)
-    (print result)
+    (apply func (loop for i in arglist collect (eval i)))
     ))
 
 ;;; exercise below
