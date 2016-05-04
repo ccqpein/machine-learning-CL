@@ -81,16 +81,17 @@
            (setf result
                  (/ (- (apply func Temp1) (apply func Temp2))
                     (* 2 d)))
-           result))
+           (coerce result 'double-float)))
     ))
 
-(defun find-function-min (func arglist &key (which nil) (alpha 0.0007) (iterTime 30000))
+(defun find-function-min (func arglist &key (which nil) (alpha 0.005) (iterTime 7000))
   "find the min value in special function"
-  (let ((result)
+  (let ((result 0)
         (reArgs))
     (declare (inline partial-derivative-ge))
     (dotimes (tt iterTime)
       (let ((pd (partial-derivative-ge func arglist :which which))
+            (costValue (apply func (loop for i in arglist collect (eval i))))
             (args (eval (elt arglist (1- which)))))
                                         ;(print pd)
                                         ;(print args)
@@ -100,11 +101,14 @@
                                (cond ((< (elt pd i) 0) (+ (elt args i) alpha))
                                      ((>= (elt pd i) 0) (- (elt args i) alpha))
                                      ))))
+        (if (< (apply func (loop for i in arglist collect (eval i))) costValue)
+            (setf reArgs (elt arglist (1- which))
+                  result (apply func (loop for i in arglist collect (eval i))))
+            )
         ))
     (print "find the min value for function")
-    (setf reArgs (elt arglist (1- which)))
-    (setf result
-          (apply func (loop for i in arglist collect (eval i))))
+    (print reArgs)
+    (print result)
     ))
 
 ;;; exercise below
