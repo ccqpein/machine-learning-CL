@@ -110,8 +110,9 @@
                   result (apply func (loop for i in arglist collect (eval i))))
             )
         ))
-    (print "find the min value for function");(print reArgs);(print result)
-    result))
+    (print "find the min value for function");(print reArgs)
+    (print result)
+    reArgs))
 
 ;;; exercise below
 (defvar *X*)

@@ -14,4 +14,7 @@
 (defpackage #:logistic-regression
   (:use #:CL #:GD)
   (:nicknames #:LR)
-  )
+  (:export #:logistic-regression
+           #:partial-derivative-ge
+           #:find-function-min
+           ))
