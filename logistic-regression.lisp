@@ -115,6 +115,7 @@
     reArgs))
 
 ;;; exercise below
+#|
 (defvar *X*)
 (setf *X*
       (let ((temp
@@ -132,3 +133,4 @@
 
 ;(compute-cost *X* *theta* *y*)
 ;(partial-derivative-lr *X* *theta* *y*)
+|#
