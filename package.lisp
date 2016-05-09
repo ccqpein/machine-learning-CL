@@ -18,3 +18,8 @@
            #:partial-derivative-ge
            #:find-function-min
            ))
+
+(defpackage #:neural-network
+  (:use #:CL #:GD #:LR)
+  (:nicknames #:NN)
+  )
