@@ -6,12 +6,12 @@
 
 (defun logistic-regression (z)
   "calculate the g(z), when g(z) larger than 0.5, return 1, else return 0"
-  (let ((g 0.0l0))
+  (let ((g 0.0d0))
     (setf g
           (+ 1.0l0 (exp (- z))))
     (if (= g 1.0)
-        (return-from logistic-regression (- 1 1.0e-5))
-        (return-from logistic-regression (/ 1.0L0 g)))))
+        (return-from logistic-regression (- 1.0d0 1.0e-5))
+        (return-from logistic-regression (/ 1.0d0 g)))))
 
 (declaim (inline logistic-regression))
 
