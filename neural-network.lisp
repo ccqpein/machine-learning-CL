@@ -15,11 +15,18 @@
 
 (defun Tmatrix (matrix)
   "return the T-Matrix"
-  (let ((newRowNum (array-dimensions matrix 1))
-        (newColNum (array-dimensions matrix 0)))
+  (let ((newRowNum (elt (array-dimensions matrix) 1))
+        (newColNum (elt (array-dimensions matrix) 0)))
   (make-array (list newRowNum newColNum)
               :initial-contents
-              (loop for
+              (let ((reList (make-list newRowNum :initial-element (make-list newColNum))))
+                (loop for i in reList do
+                     (loop for c from 0 to (1- newColNum) do
+                          (setf (nth c i)
+                                (aref matrix c r))
+                          (print reList)))
+                reList)
+              )))
 
 (defun backpropagation (y finalLayer)
   (let ((lamEnding (make-array (length y) :initial-contents
