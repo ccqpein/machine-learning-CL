@@ -1,4 +1,4 @@
-(in-package :CL-USER)
+(in-package #:CL-USER)
 
 (defpackage #:gradient-descent
   (:use #:CL)
