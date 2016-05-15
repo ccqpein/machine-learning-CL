@@ -19,14 +19,10 @@
         (newColNum (elt (array-dimensions matrix) 0)))
   (make-array (list newRowNum newColNum)
               :initial-contents
-              (let ((reList (make-list newRowNum :initial-element (make-list newColNum))))
-                (loop for i in reList do
-                     (loop for c from 0 to (1- newColNum) do
-                          (setf (nth c i)
-                                (aref matrix c r))
-                          (print reList)))
-                reList)
-              )))
+              (loop for r from 0 to (1- newRowNum) collect
+                                 (loop for c from 0 to (1- newColNum) collect
+                                      (aref matrix c r))))
+  ))
 
 (defun backpropagation (y finalLayer)
   (let ((lamEnding (make-array (length y) :initial-contents
