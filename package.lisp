@@ -23,3 +23,8 @@
   (:use #:CL #:GD #:LR)
   (:nicknames #:NN)
   )
+
+(defpackage #:support-vector-machine
+  (:use #:CL #:GD #:LR)
+  (:nicknames #:SVM)
+  )
