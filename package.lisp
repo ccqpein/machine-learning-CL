@@ -1,30 +1,35 @@
 (in-package #:CL-USER)
 
-(defpackage #:gradient-descent
+(defpackage #:toolsbox
   (:use #:CL)
-  (:nicknames #:GD)
+  (:nicknames #:TB)
   (:export #:parse-string-to-float
            #:get-num-out
            #:*list-to-array
            #:read-data
            #:array-slice
            #:array-multiply
-           ))
-
-(defpackage #:logistic-regression
-  (:use #:CL #:GD)
-  (:nicknames #:LR)
-  (:export #:logistic-regression
+           #:logistic-regression
            #:partial-derivative-ge
            #:find-function-min
            ))
 
+(defpackage #:gradient-descent
+  (:use #:CL #:TB)
+  (:nicknames #:GD)
+  )
+
+(defpackage #:logistic-regression
+  (:use #:CL #:TB)
+  (:nicknames #:LR)
+  )
+
 (defpackage #:neural-network
-  (:use #:CL #:GD #:LR)
+  (:use #:CL #:TB)
   (:nicknames #:NN)
   )
 
 (defpackage #:support-vector-machine
-  (:use #:CL #:GD #:LR)
+  (:use #:CL #:TB)
   (:nicknames #:SVM)
   )

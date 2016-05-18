@@ -1,6 +1,5 @@
 (load "./package.lisp")
-(load "./gradient-descent.lisp")
-(load "./logistic-regression.lisp")
+(load "./toolsbox.lisp")
 (in-package  #:neural-network)
 
 (defun computate-single-layer (xArray theta)
