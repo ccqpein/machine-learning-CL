@@ -90,7 +90,6 @@
   "find the min value in special function"
   (let ((result 0)
         (reArgs))
-    (declare (inline partial-derivative-ge))
     (dotimes (tt iterTime)
       (let ((pd (partial-derivative-ge func arglist :which which))
             (costValue (apply func (loop for i in arglist collect (eval i))))

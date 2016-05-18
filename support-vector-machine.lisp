@@ -19,3 +19,4 @@
     (setf result (/ (- result) lamd))
     result)
   )
+
