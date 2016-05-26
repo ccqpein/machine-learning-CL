@@ -6,7 +6,7 @@
 (in-package #:toolsbox)
 
 (defun parse-string-to-float (line)
-  "read the data from file, each line is x1 x2 ... y1, comma in data"
+  "read the data from file, each line is x1 x2 ... y1, no comma in data"
   (with-input-from-string (s line)
     (loop for num = (read s nil nil)
        while num

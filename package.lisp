@@ -33,3 +33,8 @@
   (:use #:CL #:TB)
   (:nicknames #:SVM)
   )
+
+(defpackage #:K-mean
+  (:use #:CL #:TB)
+  (:nicknames #:KM)
+  )
