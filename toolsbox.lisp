@@ -40,6 +40,7 @@
            ((not l) (print "Finsh read data" ))))
     (cdr result)))
 
+#| Rewrite this function to macro
 (defun array-slice (m i)
   "only work for two dimensions matrix. i is index number"
   (let* ((dim (array-dimensions m))
@@ -47,7 +48,18 @@
     (return-from array-slice (make-array colNum :initial-contents 
                         (loop for id from 0 to (1- colNum) collect
                              (aref m i id))))))
-(declaim (inline array-slice))
+(declaim (inline array-slice))|#
+
+(defmacro array-slice (m i)
+  (let ((mm (gensym))
+        (ii (gensym)))
+    `(let* ((,mm ,m)
+            (,ii ,i)
+            (dim (array-dimensions ,mm))
+            (colNum (cadr dim)))
+       (make-array colNum :initial-contents
+                   (loop for id from 0 to (1- colNum) collect
+                        (aref ,mm ,ii id))))))
 
 (defun array-multiply (array1 array2)
   (let ((result
