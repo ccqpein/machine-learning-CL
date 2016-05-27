@@ -40,7 +40,7 @@
            ((not l) (print "Finsh read data" ))))
     (cdr result)))
 
-#| Rewrite this function to macro
+#| Rewrite this function to macro, for fun
 (defun array-slice (m i)
   "only work for two dimensions matrix. i is index number"
   (let* ((dim (array-dimensions m))
@@ -61,13 +61,23 @@
                    (loop for id from 0 to (1- colNum) collect
                         (aref ,mm ,ii id))))))
 
+#| Rewrite this function to macro, for fun
 (defun array-multiply (array1 array2)
   (let ((result
          (loop for i across array1
             for ii across array2 sum
               (* i ii))))
     result))
-(declaim (inline array-multiply))
+(declaim (inline array-multiply))|#
+
+(defmacro array-multiply (array1 array2)
+  (let ((arr1 (gensym))
+        (arr2 (gensym)))
+    `(let ((,arr1 ,array1)
+           (,arr2 ,array2))
+       (loop for i across ,arr1
+          for ii across ,arr2 sum
+            (* i ii)))))
 
 (defun logistic-regression (z)
   "calculate the g(z), when g(z) larger than 0.5, return 1, else return 0"
