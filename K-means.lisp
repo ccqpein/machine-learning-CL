@@ -18,17 +18,18 @@
 
 (defun org-matrix (matrix arrayList)
   (let* ((len (length arrayList))
-         (arraysList (make-list len :initial-element '())))
+         (arraysReList (make-list len :initial-element '())))
     (loop for i from 0 to (1- (array-dimension matrix 0)) do
          (let* ((thisArray (array-slice matrix i))
-                (distanceList (coerce (loop for a from 0 to (1- len) collect
-                                   (point-distance thisArray (nth a arrayList))) 'list))
-                ;(minVal (*min distanceList))
-                ;(po (position minVal distanceList)))
-                )
-                                        ;(setf (nth po arraysList) (append (nth po arrayList) thisArray))
-           (print (type-of distanceList))
+                (distanceList (loop for a from 0 to (1- len) collect
+                                   (point-distance thisArray (nth a arrayList))))
+                (minVal (car (sort (copy-seq distanceList) #'<)))
+                (po (position minVal distanceList)))
+           (print "here")
+           (setf (nth po arraysReList) (push thisArray (nth po arraysReList)))
            (print distanceList)
+           (print po)
+           (print arraysReList)
                 ))))
 
 #|
