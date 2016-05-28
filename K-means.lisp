@@ -11,11 +11,14 @@
                    (expt (- (elt p1 i) (elt p2 i)) 2))))))
 
 (defmacro point-distance-multi (pn)
-  (let* ((len (length pn))
+  (let* ((pnn (loop for i across pn collect i))
+         (len (length pnn))
          (symbols (loop for i from 1 to len collect
-                       (gensym)))) ;(print len) (print symbols)
-    `(map 'SIMPLE-VECTOR (lambda (,@symbols) (/ (+ ,@symbols) ,len))
-            ,@pn)))
+                       (gensym)))
+         (ppn (gensym))) (print len) (print symbols) (print pn)
+         `(let ((,ppn (make-array ,len :initial-contents (list ,@pn))))
+            (map 'SIMPLE-VECTOR (lambda (,@symbols) (/ (+ ,@symbols) ,len))
+                 ,ppn))))
 
 (defun org-matrix (matrix arrayList)
   (let* ((len (length arrayList))
@@ -30,8 +33,7 @@
            ;(print distanceList) (print po)(print arraysReList)
            ))
     arraysReList))
-
-
+#|
 (defun K-mean (matrix K &key (iterTime 1000))
   "matrix is input matrix included all train data set, K is cluster number"
   (let ((result '())   ;result is a list for all cluster center point
@@ -40,5 +42,6 @@
         (initKArray (loop for i from 0 to (1- K) collect
                              (array-slice matrix (random rowNum *random-state*)))))
     (do* ((i 1 (incf i))
-          (poitsList initKArray  
+          (poitsList initKArray ()
 
+|#
