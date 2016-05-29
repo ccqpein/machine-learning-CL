@@ -15,17 +15,19 @@
     `(let ((,a ,ar))
        (loop for i across ,a collect i))))
 
-(defmacro point-distance-multi (num pn)
-  (let* ((pnn (eval pn))
-         (pnnn (loop for i in pnn collect (cons 'quote (list i))))
-         (symbols (loop for i from 1 to num collect
-                       (gensym))))
-    (print symbols)
-    (print pnn)
-    (print pnnn)
-    `(maplist (lambda (,@symbols) (/ (+ ,@symbols) ,num))
-          ,@pnnn)))
-
+(defmacro point-distance-multi (pn num)
+  "pn should be a list of arrays, num means how many digits you want to calculate to average value. For example if pn is (list #(2 3 4) #(1 2 3)), result equal (3/2 5/2 7/2) if num is 3, the result will be (3/2 5/2) if num is 2"
+  (let* ((arrayNum (gensym))
+         (len (gensym))
+         (arrayList (gensym)))
+    `(let* ((,len ,num)
+            (,arrayList ,pn)
+            (,arrayNum (length ,arrayList)))
+       ;(print ,len) (print ,arrayList) (print ,arrayLen)
+       (loop for i from 0 to (1- ,len) collect
+            (/ (loop for ar in ,arrayList sum
+                    (elt ar i)) ,arrayNum)))))
+    
 (defun org-matrix (matrix arrayList)
   (let* ((len (length arrayList))
          (arraysReList (make-list len :initial-element '())))
