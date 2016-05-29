@@ -10,15 +10,21 @@
         (sqrt (loop for i from 0 to (1- len) sum
                    (expt (- (elt p1 i) (elt p2 i)) 2))))))
 
-(defmacro point-distance-multi (pn)
-  (let* ((pnn (loop for i across pn collect i))
-         (len (length pnn))
-         (symbols (loop for i from 1 to len collect
-                       (gensym)))
-         (ppn (gensym))) (print len) (print symbols) (print pn)
-         `(let ((,ppn (make-array ,len :initial-contents (list ,@pn))))
-            (map 'SIMPLE-VECTOR (lambda (,@symbols) (/ (+ ,@symbols) ,len))
-                 ,ppn))))
+(defmacro *array-to-list (ar)
+  (let ((a (gensym)))
+    `(let ((,a ,ar))
+       (loop for i across ,a collect i))))
+
+(defmacro point-distance-multi (num pn)
+  (let* ((pnn (eval pn))
+         (pnnn (loop for i in pnn collect (cons 'quote (list i))))
+         (symbols (loop for i from 1 to num collect
+                       (gensym))))
+    (print symbols)
+    (print pnn)
+    (print pnnn)
+    `(maplist (lambda (,@symbols) (/ (+ ,@symbols) ,num))
+          ,@pnnn)))
 
 (defun org-matrix (matrix arrayList)
   (let* ((len (length arrayList))
