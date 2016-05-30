@@ -15,7 +15,7 @@
     `(let ((,a ,ar))
        (loop for i across ,a collect i))))
 
-(defmacro point-distance-multi (pn num)
+(defmacro points-average (pn num)
   "pn should be a list of lists, num means how many digits you want to calculate to average value. For example if pn is (list '(2 3 4) '(1 2 3)), result equal (3/2 5/2 7/2) if num is 3, the result will be (3/2 5/2) if num is 2"
   (let* ((arrayNum (gensym))
          (len (gensym))
@@ -38,18 +38,45 @@
                 (minVal (car (sort (copy-seq distanceList) #'<)))
                 (po (position minVal distanceList)))
            (setf (nth po arraysReList) (push thisArray (nth po arraysReList)))
-           ;(print distanceList) (print po)(print arraysReList)
+           ;(print distanceList) (print po) (print arraysReList)
            ))
     arraysReList))
-#|
+
+(defun gen-random-num (n times)
+  "return result is list. n is number limit, t is number of results."
+  (let ((result '())
+        (x))
+    (dotimes (i times result)
+      (tagbody
+         (setf x (random n *random-state*))
+         (go tag-b)
+       tag-a
+         (setf x (random n *random-state*))
+         (go tag-b)
+       tag-b
+         (if (find x result)
+             (go tag-a)
+             (go tag-c))
+       tag-c
+         (setf result (append result (list x)))))
+    ))
+           
 (defun K-mean (matrix K &key (iterTime 1000))
   "matrix is input matrix included all train data set, K is cluster number"
-  (let ((result '())   ;result is a list for all cluster center point
-        (rowNum (array-dimension matrix 0))
-        (colNum (array-dimension matrix 1))
-        (initKArray (loop for i from 0 to (1- K) collect
-                             (array-slice matrix (random rowNum *random-state*)))))
+  (let* ((result)   ;result is a list for all cluster center point
+         (rowNum (array-dimension matrix 0))
+         (colNum (array-dimension matrix 1))
+         (nn (gen-random-num rowNum K))
+         (initKArray (loop for i from 0 to (1- K) collect
+                          (array-slice matrix (elt nn i)))))
+    ;(print initKArray)
     (do* ((i 1 (incf i))
-          (poitsList initKArray ()
-
-|#
+          (poitsList initKArray (loop for ii from 0 to (1- K) collect
+                                     (*list-to-array (points-average (nth ii arrayGroupList) colNum))))
+          (arrayGroupList (org-matrix matrix poitsList)
+                          (org-matrix matrix poitsList))
+          )
+         ((> i iterTime)
+          (print "done") ;(print arrayGroupList) (print poitsList)
+          (print poitsList)))
+    result))

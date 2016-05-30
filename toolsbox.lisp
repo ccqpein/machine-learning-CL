@@ -23,11 +23,12 @@
        ((eql pos nil)
         nums)))
 
-(defun *list-to-array (ll)
-  (let* ((len (length ll))
-         (ar (make-array len :initial-contents ll)))
-    ar))
-(declaim (inline *list-to-array))
+(defmacro *list-to-array (l)
+  (let ((ll (gensym)))
+    `(let* ((,ll ,l)
+            (len (length ,ll))
+         (ar (make-array len :initial-contents ,ll)))
+    ar)))
 
 (defun read-data (path)
   (let ((result))
