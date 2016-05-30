@@ -30,6 +30,11 @@
          (ar (make-array len :initial-contents ,ll)))
     ar)))
 
+(defmacro *array-to-list (ar)
+  (let ((a (gensym)))
+    `(let ((,a ,ar))
+       (loop for i across ,a collect i))))
+
 (defun read-data (path)
   (let ((result))
     (with-open-file (f path
@@ -41,16 +46,6 @@
            ((not l) (print "Finsh read data" ))))
     (cdr result)))
 
-#| Rewrite this function to macro, for fun
-(defun array-slice (m i)
-  "only work for two dimensions matrix. i is index number"
-  (let* ((dim (array-dimensions m))
-         (colNum (cadr dim)))
-    (return-from array-slice (make-array colNum :initial-contents 
-                        (loop for id from 0 to (1- colNum) collect
-                             (aref m i id))))))
-(declaim (inline array-slice))|#
-
 (defmacro array-slice (m i)
   (let ((mm (gensym))
         (ii (gensym)))
@@ -61,15 +56,6 @@
        (make-array colNum :initial-contents
                    (loop for id from 0 to (1- colNum) collect
                         (aref ,mm ,ii id))))))
-
-#| Rewrite this function to macro, for fun
-(defun array-multiply (array1 array2)
-  (let ((result
-         (loop for i across array1
-            for ii across array2 sum
-              (* i ii))))
-    result))
-(declaim (inline array-multiply))|#
 
 (defmacro array-multiply (array1 array2)
   (let ((arr1 (gensym))
@@ -153,3 +139,43 @@
     (print "find the min value for function");(print reArgs)
     (print result)
     reArgs))
+
+(defun point-distance (p1 p2)
+  "calculate the distance of two points, point input by array and have same length"
+  (let ((len (length p1)))
+    (if (/= (length p2) len)
+        (print "You need make sure arrays length be same")
+        (sqrt (loop for i from 0 to (1- len) sum
+                   (expt (- (elt p1 i) (elt p2 i)) 2))))))
+
+(defmacro points-average (pn num)
+  "pn should be a list of lists, num means how many digits you want to calculate to average value. For example if pn is (list '(2 3 4) '(1 2 3)), result equal (3/2 5/2 7/2) if num is 3, the result will be (3/2 5/2) if num is 2"
+  (let* ((arrayNum (gensym))
+         (len (gensym))
+         (arrayList (gensym)))
+    `(let* ((,len ,num)
+            (,arrayList ,pn)
+            (,arrayNum (length ,arrayList)))
+       ;(print ,len) (print ,arrayList) (print ,arrayLen)
+       (loop for i from 0 to (1- ,len) collect
+            (/ (loop for ar in ,arrayList sum
+                    (elt ar i)) ,arrayNum)))))
+
+(defun gen-random-num (n times)
+  "return result is list. n is number limit, t is number of results."
+  (let ((result '())
+        (x))
+    (dotimes (i times result)
+      (tagbody
+         (setf x (random n *random-state*))
+         (go tag-b)
+       tag-a
+         (setf x (random n *random-state*))
+         (go tag-b)
+       tag-b
+         (if (find x result)
+             (go tag-a)
+             (go tag-c))
+       tag-c
+         (setf result (append result (list x)))))
+    ))
