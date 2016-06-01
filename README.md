@@ -9,11 +9,11 @@ All operations which I used in code be store in `toolbox`
 
 ## Algorithm ##
 
-[x] gradient-descent
-[x] logistic-regression
-[x] K-mean
-[ ] support-vector-machine
-[ ] neural-network
+* [x] gradient-descent
+* [x] logistic-regression
+* [x] K-mean
+* [ ] support-vector-machine
+* [ ] neural-network
 
 ## Test Data
 
