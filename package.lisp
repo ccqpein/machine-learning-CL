@@ -6,12 +6,17 @@
   (:export #:parse-string-to-float
            #:get-num-out
            #:*list-to-array
+           #:*array-to-list
            #:read-data
            #:array-slice
            #:array-multiply
            #:logistic-regression
            #:partial-derivative-ge
            #:find-function-min
+           #:point-distance
+           #:points-average
+           #:gen-random-num
+           #:with-gensyms
            ))
 
 (defpackage #:gradient-descent

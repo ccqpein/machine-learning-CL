@@ -162,7 +162,7 @@
                     (elt ar i)) ,arrayNum)))))
 
 (defun gen-random-num (n times)
-  "return result is list. n is number limit, t is number of results."
+  "return result is list. n is number limit, t is number of results. No same number in the result list"
   (let ((result '())
         (x))
     (dotimes (i times result)
@@ -179,3 +179,7 @@
        tag-c
          (setf result (append result (list x)))))
     ))
+
+(defmacro with-gensyms ((&rest names) &body body)
+  `(let ,(loop for n in names collect `(,n (gensym)))
+          ,@body))
