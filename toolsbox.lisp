@@ -5,6 +5,10 @@
 (load "./package.lisp")
 (in-package #:toolsbox)
 
+(defmacro with-gensyms ((&rest names) &body body)
+  `(let ,(loop for n in names collect `(,n (gensym)))
+          ,@body))
+
 (defun parse-string-to-float (line)
   "read the data from file, each line is x1 x2 ... y1, no comma in data"
   (with-input-from-string (s line)
@@ -24,14 +28,14 @@
         nums)))
 
 (defmacro *list-to-array (l)
-  (let ((ll (gensym)))
+  (with-gensyms (ll)
     `(let* ((,ll ,l)
             (len (length ,ll))
          (ar (make-array len :initial-contents ,ll)))
     ar)))
 
 (defmacro *array-to-list (ar)
-  (let ((a (gensym)))
+  (with-gensyms (a)
     `(let ((,a ,ar))
        (loop for i across ,a collect i))))
 
@@ -47,8 +51,7 @@
     (cdr result)))
 
 (defmacro array-slice (m i)
-  (let ((mm (gensym))
-        (ii (gensym)))
+  (with-gensyms (mm ii)
     `(let* ((,mm ,m)
             (,ii ,i)
             (dim (array-dimensions ,mm))
@@ -58,8 +61,7 @@
                         (aref ,mm ,ii id))))))
 
 (defmacro array-multiply (array1 array2)
-  (let ((arr1 (gensym))
-        (arr2 (gensym)))
+  (with-gensyms (arr1 arr2)
     `(let ((,arr1 ,array1)
            (,arr2 ,array2))
        (loop for i across ,arr1
@@ -150,9 +152,7 @@
 
 (defmacro points-average (pn num)
   "pn should be a list of lists, num means how many digits you want to calculate to average value. For example if pn is (list '(2 3 4) '(1 2 3)), result equal (3/2 5/2 7/2) if num is 3, the result will be (3/2 5/2) if num is 2"
-  (let* ((arrayNum (gensym))
-         (len (gensym))
-         (arrayList (gensym)))
+  (with-gensyms (arrayNum len arrayList)
     `(let* ((,len ,num)
             (,arrayList ,pn)
             (,arrayNum (length ,arrayList)))
@@ -179,7 +179,3 @@
        tag-c
          (setf result (append result (list x)))))
     ))
-
-(defmacro with-gensyms ((&rest names) &body body)
-  `(let ,(loop for n in names collect `(,n (gensym)))
-          ,@body))
