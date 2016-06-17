@@ -1,4 +1,4 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+1;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  Merge function which been used often be a single file. Let the packages structure simplier
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -179,3 +179,11 @@
        tag-c
          (setf result (append result (list x)))))
     ))
+
+(defmacro aappend (l &rest eles)
+  (with-gensyms (li elel)
+    `(let ((,li ,l)
+           (,elel (list ,@eles)))
+       (loop for i in ,elel do
+            (setf ,li (append ,li (list i))))
+       ,li)))
