@@ -162,7 +162,7 @@
                     (elt ar i)) ,arrayNum)))))
 
 (defun gen-random-num (n times)
-  "return result is list. n is number limit, t is number of results. No same number in the result list"
+  "return result is list. n is number limit, times is number of results. No same number in the result list"
   (let ((result '())
         (x))
     (dotimes (i times result)
