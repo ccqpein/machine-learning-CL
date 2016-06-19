@@ -17,6 +17,7 @@
            #:points-average
            #:gen-random-num
            #:with-gensyms
+           #:aappend
            ))
 
 (defpackage #:gradient-descent
@@ -42,4 +43,9 @@
 (defpackage #:K-mean
   (:use #:CL #:TB)
   (:nicknames #:KM)
+  )
+
+(defpackage #:anomaly-detection
+  (:use #:CL #:TB)
+  (:nicknames #:AD)
   )
