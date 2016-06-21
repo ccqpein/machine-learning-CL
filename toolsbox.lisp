@@ -51,6 +51,7 @@
     (cdr result)))
 
 (defmacro array-slice (m i)
+  "get array from matrix, m is matrix i is index"
   (with-gensyms (mm ii)
     `(let* ((,mm ,m)
             (,ii ,i)
@@ -181,9 +182,9 @@
     ))
 
 (defmacro aappend (l &rest eles)
-  (with-gensyms (li elel)
-    `(let ((,li ,l)
-           (,elel (list ,@eles)))
+  "l must be symbol not expression. For example, (aappend a 2 3 4) is fine, (aappend '(1 2) 2 3) and (aappend (list 2 3) 2 2) will issue error"
+  (with-gensyms (elel)
+    `(let ((,elel (list ,@eles)))
        (loop for i in ,elel do
-            (setf ,li (append ,li (list i))))
-       ,li)))
+            (setf ,l (append ,l (list i))))
+       ,l)))

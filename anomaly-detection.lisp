@@ -14,6 +14,22 @@
     (list aver SD)))
 
 
+
+
 (defun anomaly-detection (matrix)
   "as usual, the input var is matrix include every attributions of sample and get the average and the standard deviation"
-  
+  (let* ((matrixDim (array-dimensions matrix))
+         (rowNum (nth 0 matrixDim))
+         (colNum (nth 1 matrixDim))
+         (result '()))
+    (do* ((colIndex 0 (1+ colIndex))
+          (thisCol (loop for i from 0 to (1- rowNum) collect
+                        (aref matrix i colIndex))
+                   (loop for i from 0 to (1- rowNum) collect
+                        (aref matrix i colIndex))))
+         ((= colIndex (1- colNum))
+          (aappend result (standard-deviation thisCol)))  ;last time
+      ;(print thisCol) (print colIndex) (print (standard-deviation thisCol))
+      (aappend result (standard-deviation thisCol)))
+    result))
+      
