@@ -9,8 +9,10 @@
            #:*array-to-list
            #:read-data
            #:array-slice
+           #:array-slice-col
            #:array-multiply
            #:logistic-regression
+           #:standard-deviation
            #:partial-derivative-ge
            #:find-function-min
            #:point-distance

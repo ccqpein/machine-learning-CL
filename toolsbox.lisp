@@ -61,6 +61,15 @@
                    (loop for id from 0 to (1- colNum) collect
                         (aref ,mm ,ii id))))))
 
+(defmacro array-slice-col (m i)
+  (with-gensyms (mm ii)
+    `(let* ((,mm ,m)
+            (,ii ,i)
+            (dimens (array-dimensions ,mm))
+            (rowNum (nth 0 dimens)))
+       (loop for i from 0 to (1- rowNum) collect
+            (aref ,mm i ,ii)))))
+
 (defmacro array-multiply (array1 array2)
   (with-gensyms (arr1 arr2)
     `(let ((,arr1 ,array1)
@@ -77,7 +86,17 @@
     (if (= g 1.0)
         (return-from logistic-regression (- 1.0d0 1.0e-5))
         (return-from logistic-regression (/ 1.0d0 g)))))
+
 (declaim (inline logistic-regression))
+
+(defun standard-deviation (numlist)
+  "return the value include the average and standard deviation of the numlist"
+  (let* ((sum (apply #'+ numlist))
+         (len (length numlist))
+         (aver (/ sum len))
+         (SD (sqrt (loop for i in numlist sum
+                       (expt (- i aver) 2)))))
+    (list aver SD)))
 
 (defun partial-derivative-ge (func arglist &key (which nil) (d (expt 2 -4)))
   "to calculate the partial-derivative. argspoint is which args need to caculate partial derivative. Use method: if function args are '(1 2), do not need which; if your function need '(#(1 2 3) #(1 3 3)), you need the which to point which arg you want to calculate partial derivative."
@@ -188,3 +207,4 @@
        (loop for i in ,elel do
             (setf ,l (append ,l (list i))))
        ,l)))
+
