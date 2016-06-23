@@ -51,3 +51,8 @@
   (:use #:CL #:TB)
   (:nicknames #:AD)
   )
+
+(defpackage #:recommender-systems
+  (:use #:CL #:TB)
+  (:nicknames #:RS)
+  )
