@@ -13,3 +13,20 @@
   "matrix is users' rating form, mIndex means which movie be learned"
   
   )
+
+
+(defmacro sigma (funcExp indPara paraList times)
+  (with-gensyms (result paraPool inFuncExp)
+    `(let ((,result 0)
+           (,paraPool ,paraList)
+           (,inFuncExp ,funcExp))
+       (do* ((tt 0 (incf tt))
+             (thisPara (elt ,paraPool tt)
+                       (elt ,paraPool tt)))
+            ((= tt ,times))
+         (setf (elt ,inFuncExp ,indPara) thisPara)
+         (setf ,result (+ ,result (eval ,inFuncExp))))
+       ,result
+       )))
+
+
