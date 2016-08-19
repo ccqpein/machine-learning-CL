@@ -3,7 +3,8 @@
 ## Dependency ##
 
 ~~Use [lisp-matrix](https://github.com/blindglobe/lisp-matrix) to calculate matrix~~
-I write by myself
+
+I write matrix opration by myself
 
 All operations which I used in code be store in `toolbox`
 

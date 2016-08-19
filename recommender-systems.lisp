@@ -11,4 +11,5 @@
 
 (defun get-feature-vector (matrix mIndex)
   "matrix is users' rating form, mIndex means which movie be learned"
+  
   )
