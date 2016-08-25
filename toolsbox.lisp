@@ -215,11 +215,16 @@
     `(let ((,result 0)
            (,paraPool ,paraList)
            (,inFuncExp ,funcExp))
-       (do* ((tt 0 (incf tt))
-             (thisPara (elt ,paraPool tt)
-                       (elt ,paraPool tt)))
+       (do* ((tt 0 (incf tt)))
             ((= tt ,times))
-         (setf (elt ,inFuncExp ,indPara) thisPara)
+         (setf (elt ,inFuncExp ,indPara) (elt ,paraPool tt))
          (setf ,result (+ ,result (eval ,inFuncExp))))
        ,result
        )))
+
+;;; The marco below come from http://stackoverflow.com/questions/39048561/issues-when-write-loop-collect-in-macro/39052748#39052748, but it works not follow the purpose.
+
+(defmacro sigma2 (exp indPara ll)
+  `(+ ,@(loop for i in ll and exp1 = (copy-list exp)
+              do (setf (elt exp1 indPara) i)
+              collect exp1)))
