@@ -208,19 +208,13 @@
             (setf ,l (append ,l (list i))))
        ,l)))
 
-(defmacro sigma (funcExp indPara paraList times)
+(defmacro sigma ((&rest exp) indPara paraList times)
   "Do simga calculation, for example:
-(sigma '(+ 1 2) 1 '(2 3 4) 2) => (+ (+ 2 2) (+ 3 2)) "
-  (with-gensyms (result paraPool inFuncExp)
-    `(let ((,result 0)
-           (,paraPool ,paraList)
-           (,inFuncExp ,funcExp))
-       (do* ((tt 0 (incf tt)))
-            ((= tt ,times))
-         (setf (elt ,inFuncExp ,indPara) (elt ,paraPool tt))
-         (setf ,result (+ ,result (eval ,inFuncExp))))
-       ,result
-       )))
+(sigma (+ 1 2) 1 (2 3 4) 2) => (+ (+ 2 2) (+ 3 2))"
+  `(+ ,@(loop for tt from 0 to (1- times)
+           for expT = (copy-list exp)
+           do (setf (nth indPara expT) (nth tt paraList))
+           collect expT)))
 
 ;;; The marco below come from http://stackoverflow.com/questions/39048561/issues-when-write-loop-collect-in-macro/39052748#39052748, but it works not follow the purpose.
 
