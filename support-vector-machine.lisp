@@ -14,9 +14,10 @@
                   (* (- 1 (nth r y))
                      (log (- 1 (logistic-regression
                                 (array-multiply (array-slice X r) theta))))))))
-                                        ;(print result)
     (setf result (/ (- result) lamd))
     result)
   )
 
 ;;need review SVM algorithm
+
+(defun costf ())
