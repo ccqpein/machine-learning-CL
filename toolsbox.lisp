@@ -209,7 +209,7 @@
        ,l)))
 
 (defmacro sigma ((&rest exp) indPara times &rest paraList)
-  "Improve the sigma3 marco, now this marco can do the several parameters at same time:
+  "Improve the sigma macto from second version, this marco can do the several parameters at same time now:
 For example (sigma (+ 1 2) (1 2) 4 '(1 2 3 4 5) '(5 4 3 2))
              => (+ (+ 1 5) (+ 2 4) (+ 3 3) (+ 4 2))"
   `(+ ,@(loop for tt from 0 to (1- times)
