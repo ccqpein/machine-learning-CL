@@ -208,7 +208,20 @@
             (setf ,l (append ,l (list i))))
        ,l)))
 
-(defmacro sigma ((&rest exp) indPara paraList times)
+(defmacro sigma ((&rest exp) indPara times &rest paraList)
+  "Improve the sigma3 marco, now this marco can do the several parameters at same time:
+For example (sigma (+ 1 2) (1 2) 4 '(1 2 3 4 5) '(5 4 3 2))
+             => (+ (+ 1 5) (+ 2 4) (+ 3 3) (+ 4 2))"
+  `(+ ,@(loop for tt from 0 to (1- times)
+           for expT = (copy-list exp)
+           do
+             (loop for id from 0 to (1- (length indPara))
+                  for paraTT = (eval (nth id paraList))
+                do (setf (nth (nth id indPara) expT)
+                         (nth tt paraTT)))
+           collect expT)))
+
+(defmacro sigma3 ((&rest exp) indPara paraList times)
   "Do simga calculation, for example if paraExp = '(2 3): (sigma (+ 1 2) 1 paraExp 2) => (+ (+ 2 2) (+ 3 2))"
   (let ((para (eval paraList)))
       `(+ ,@(loop for tt from 0 to (1- times)
@@ -222,3 +235,5 @@
   `(+ ,@(loop for i in ll and exp1 = (copy-list exp)
               do (setf (elt exp1 indPara) i)
               collect exp1)))
+
+
