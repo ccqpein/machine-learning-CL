@@ -78,6 +78,13 @@
           for ii across ,arr2 sum
             (* i ii)))))
 
+(defun matrix-norm-2 (m)
+  "matrix 2-norm"
+  (let ((rowNum (- (elt (array-dimensions m) 0) 1)))
+    (sqrt (loop for i from 0 to rowNum
+             for a = (array-slice m i)
+             sum (array-multiply a a)))))
+
 (defun logistic-regression (z)
   "calculate the g(z), when g(z) larger than 0.5, return 1, else return 0"
   (let ((g 0.0d0))

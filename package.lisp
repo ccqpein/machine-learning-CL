@@ -20,6 +20,8 @@
            #:gen-random-num
            #:with-gensyms
            #:aappend
+           #:sigma
+           #:matrix-norm-2
            ))
 
 (defpackage #:gradient-descent
