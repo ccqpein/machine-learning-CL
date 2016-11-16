@@ -2,29 +2,17 @@
 (load "./toolsbox.lisp")
 (in-package  #:neural-network)
 
-(defun computate-single-layer (xArray theta)
-  "theta is a matrix"
-  (let* ((rowNum (1- (elt (array-dimensions theta) 0)))
-         (nextLayer (make-array (+ rowNum 2) :initial-contents
-                                (append '(1)
-                                        (loop for i from 0 to rowNum collect
-                                             (logistic-regression (array-multiply xArray
-                                                                                  (array-slice theta i))))))))
-    nextLayer))
+;; Machine Learning week 4 classic Neural Network
+;; Assume X is vector included n elements, so theta should m*(n+1) matrix
 
-(defun Tmatrix (matrix)
-  "return the T-Matrix"
-  (let ((newRowNum (elt (array-dimensions matrix) 1))
-        (newColNum (elt (array-dimensions matrix) 0)))
-  (make-array (list newRowNum newColNum)
-              :initial-contents
-              (loop for r from 0 to (1- newRowNum) collect
-                                 (loop for c from 0 to (1- newColNum) collect
-                                      (aref matrix c r))))
-  ))
+(setf testX (make-array 3 :initial-contents '(1 1 3)))
+(setf testM (make-array '(3 4) :initial-contents '((1 1 0 0)
+                                                   (1 2 0 0)
+                                                   (1 3 0 0))))
 
-(defun backpropagation (y finalLayer)
-  (let ((lamEnding (make-array (length y) :initial-contents
-                               (loop for i from 0 to (1- (length y)) collect
-                                    (- (elt y i) (elt finalLayer i))))))
-    (print lamEnding)))
+(defun next-layer (X matrix)
+  (loop for i from 1 to (array-dimension matrix 0)
+     for thisRow = (array-slice matrix (1- i))
+     for thisX = (make-array (1+ (length X))
+                             :initial-contents (list* '1 (*array-to-list X)))
+     collect (array-multiply thisX thisRow)))
