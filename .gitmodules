@@ -1,0 +1,3 @@
+[submodule "CLisp-toolbox-ccQ"]
+	path = CLisp-toolbox-ccQ
+	url = git@github.com:ccqpein/CLisp-toolbox-ccQ.git
