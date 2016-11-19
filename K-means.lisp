@@ -1,5 +1,12 @@
-(load "./package.lisp")
-(load "./toolsbox.lisp")
+(require "asdf")
+(push "./CLisp-toolbox-ccQ/" asdf:*central-registry*)
+(asdf:load-system :ccQ-toolbox)
+
+(defpackage #:K-mean
+  (:use #:CL #:MT #:MXT)
+  (:nicknames #:KM)
+  )
+
 (in-package #:K-mean)
 
 
@@ -16,7 +23,8 @@
            ;(print distanceList) (print po) (print arraysReList)
            ))
     arraysReList))
-           
+
+
 (defun K-mean (matrix K &key (iterTime 1000))
   "matrix is input matrix included all train data set, K is cluster number"
   (let* ((result)   ;result is a list for all cluster center point
