@@ -1,5 +1,12 @@
-(load "./package.lisp")
-(load "./toolsbox.lisp")
+(require "asdf")
+(push "./CLisp-toolbox-ccQ/" asdf:*central-registry*)
+(asdf:load-system :ccQ-toolbox)
+
+(defpackage #:anomaly-detection
+  (:use #:CL #:MT #:MXT)
+  (:nicknames #:AD)
+  )
+
 (in-package #:anomaly-detection)
 
 

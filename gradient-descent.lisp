@@ -1,5 +1,12 @@
-(load "./package.lisp")
-(load "./toolsbox.lisp")
+(require "asdf")
+(push "./CLisp-toolbox-ccQ/" asdf:*central-registry*)
+(asdf:load-system :ccQ-toolbox)
+
+(defpackage #:gradient-descent
+  (:use #:CL #:MT #:MXT)
+  (:nicknames #:GD)
+  )
+
 (in-package #:gradient-descent)
 
 (defun compute-cost (X theta y)

@@ -1,5 +1,12 @@
-(load "./package.lisp")
-(load "./toolsbox.lisp")
+(require "asdf")
+(push "./CLisp-toolbox-ccQ/" asdf:*central-registry*)
+(asdf:load-system :ccQ-toolbox)
+
+(defpackage #:neural-network
+  (:use #:CL #:MT #:MXT)
+  (:nicknames #:NN)
+  )
+
 (in-package  #:neural-network)
 
 ;; Machine Learning week 4 classic Neural Network

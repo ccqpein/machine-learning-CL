@@ -1,5 +1,12 @@
-(load "./package.lisp")
-(load "./toolsbox.lisp")
+(require "asdf")
+(push "./CLisp-toolbox-ccQ/" asdf:*central-registry*)
+(asdf:load-system :ccQ-toolbox)
+
+(defpackage #:support-vector-machine
+  (:use #:CL #:MT #:MXT)
+  (:nicknames #:SVM)
+  )
+
 (in-package #:support-vector-machine)
 
 (defun compute-cost (X theta y lamd)
